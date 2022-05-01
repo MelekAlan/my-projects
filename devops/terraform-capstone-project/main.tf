@@ -101,7 +101,7 @@ resource "aws_s3_bucket" "s3-failover" {
 
   website {
     index_document = "index.html"
-    error_document = "index.hhtml"
+    error_document = "index.html"
   }
 }
 

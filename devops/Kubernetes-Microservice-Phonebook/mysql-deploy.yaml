@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mysql-deploy
+  name: mysql-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-deploy
+  template:
+    metadata:
+      labels:
+        app: mysql-deploy
+    spec:
+      containers:
+      - image: mysql:5.7
+        name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          #value: J12345j
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql_root_password
+        - name: MYSQL_PASSWORD
+          #value: Clarusway_1
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: mysql_admin_password
+        - name: MYSQL_USER
+          #value: clarus
+          valueFrom:
+            configMapKeyRef:
+              name: mysql-config
+              key: MYSQL_USER
+        - name: MYSQL_DATABASE
+          #value: phonebook
+          valueFrom:
+            configMapKeyRef:
+              name: mysql-config
+              key: MYSQL_DATABASE
+        resources: {}
+        volumeMounts:
+          - mountPath: /var/lib/mysql
+            name: mysql-persistent-volume
+      volumes:
+        - name: mysql-persistent-volume
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim
